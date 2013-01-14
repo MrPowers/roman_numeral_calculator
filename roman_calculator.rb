@@ -1,33 +1,48 @@
 class RomanCalculator
-	attr_reader :number_to_symbol, :symbol_to_number
-	def initialize(expression) # VIII * III
-		@roman1, @operator, @roman2 = expression.split
-		@number_to_symbol = {1000 => "M", 500 => "D", 100 => "C", 50 => "L", 10 => "X", 5 => "V", 1 => "I"}
-		@symbol_to_number = {"M" => 1000, "D" => 500, "C" => 100, "L" => 50, "X" => 10, "V" => 5, "I" => 1}
-	end
+  attr_reader :conversion
+  def initialize(expression) # VIII * III
+    @roman1, @operator, @roman2 = expression.split
+    @conversion = {1000 => "M", 900 => "CM", 500 => "D", 400 => "CD", 100 => "C", 90 => "XC",
+                  50 => "L", 40 => "XL", 10 => "X", 9 => "IX", 5 => "V", 4 => "IV", 1 => "I"}
+  end
 
-	def roman_to_number(roman)
-		roman = roman.split("")
-		roman.map! { |number| symbol_to_number[number] }
-		result = []
-		roman.each_with_index do |number, index|
-			if index == 0
-				result.push(number)
-			elsif number > roman[index - 1]
-				simplified_number = number - roman[index - 1]
-				result.pop
-				result.push(simplified_number)
-			else
-				result.push(number)
-			end
-		end
-		result.inject(&:+)
-	end
+  def main
+    number1 = roman_to_number(@roman1)
+    number2 = roman_to_number(@roman2)
+    number_to_roman(eval("#{number1} #{@operator} #{number2}"))
+  end
 
-	def number_to_roman(number)
-		
-	end
+  def roman_to_number(roman)
+    roman = roman.split("")
+    roman.map! { |number| conversion.invert[number] }
+    result = []
+    roman.each_with_index do |number, index|
+      if index == 0
+        result.push(number)
+      elsif number > roman[index - 1]
+        result.pop
+        simplified_number = number - roman[index - 1]
+        result.push(simplified_number)
+      else
+        result.push(number)
+      end
+    end
+    result.inject(&:+)
+  end
+
+  def number_to_roman(number)
+    formatted_results = []
+    result = ""
+    conversion.each do |denominator, symbol|
+      if number % denominator < number
+        occurences, new_number = number.divmod(denominator)
+        formatted_results.push([occurences, denominator])
+        number = new_number
+      end
+    end
+    formatted_results.each do |occurences, number|
+      occurences.times { result += (conversion[number]) }
+    end
+    result
+  end
 end
-
-c = RomanCalculator.new("VIII * III")
-p c.roman_to_number("I")
