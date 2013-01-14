@@ -1,6 +1,6 @@
 class RomanCalculator
   attr_reader :conversion
-  def initialize(expression) # VIII * III
+  def initialize(expression)
     @roman1, @operator, @roman2 = expression.split
     @conversion = {1000 => "M", 900 => "CM", 500 => "D", 400 => "CD", 100 => "C", 90 => "XC",
                   50 => "L", 40 => "XL", 10 => "X", 9 => "IX", 5 => "V", 4 => "IV", 1 => "I"}
@@ -21,8 +21,7 @@ class RomanCalculator
         result.push(number)
       elsif number > roman[index - 1]
         result.pop
-        simplified_number = number - roman[index - 1]
-        result.push(simplified_number)
+        result.push(number - roman[index - 1])
       else
         result.push(number)
       end
@@ -31,17 +30,12 @@ class RomanCalculator
   end
 
   def number_to_roman(number)
-    formatted_results = []
     result = ""
     conversion.each do |denominator, symbol|
       if number % denominator < number
-        occurences, new_number = number.divmod(denominator)
-        formatted_results.push([occurences, denominator])
-        number = new_number
+        occurrences, number = number.divmod(denominator)
+        occurrences.times { result += (conversion[denominator]) }
       end
-    end
-    formatted_results.each do |occurences, number|
-      occurences.times { result += (conversion[number]) }
     end
     result
   end
