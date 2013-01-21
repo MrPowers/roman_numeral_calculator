@@ -9,7 +9,8 @@ class RomanCalculator
   def main
     number1 = roman_to_number(@roman1)
     number2 = roman_to_number(@roman2)
-    number_to_roman(eval("#{number1} #{@operator} #{number2}"))
+    integer_result = number1.send(@operator.to_sym, number2)
+    number_to_roman(integer_result)
   end
 
   def roman_to_number(roman)
